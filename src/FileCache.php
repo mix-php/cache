@@ -34,7 +34,7 @@ class FileCache extends Component
     public function get($key, $default = null)
     {
         $filename = $this->getCacheFileName($key);
-        $data     = file_get_contents($filename);
+        $data     = @file_get_contents($filename);
         if (empty($data)) {
             return $default;
         }
@@ -77,7 +77,7 @@ class FileCache extends Component
     public function delete($key)
     {
         $filename = $this->getCacheFileName($key);
-        return unlink($filename);
+        return @unlink($filename);
     }
 
     /**

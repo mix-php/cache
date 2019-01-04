@@ -25,6 +25,12 @@ class RedisCache extends Component
     public $handler;
 
     /**
+     * Key前缀
+     * @var string
+     */
+    public $keyPrefix = 'CACHE:';
+
+    /**
      * 初始化事件
      */
     public function onInitialize()
@@ -44,7 +50,16 @@ class RedisCache extends Component
      */
     public function get($key, $default = null)
     {
-
+        $cacheKey = $this->keyPrefix . $key;
+        $value    = $this->handler->get($cacheKey);
+        if (empty($value)) {
+            return $default;
+        }
+        $value = unserialize($value);
+        if ($value === false) {
+            return $default;
+        }
+        return $value;
     }
 
     /**
@@ -56,7 +71,13 @@ class RedisCache extends Component
      */
     public function set($key, $value, $ttl = null)
     {
-
+        $cacheKey = $this->keyPrefix . $key;
+        if (is_null($ttl)) {
+            $success = $this->handler->set($cacheKey, serialize($value));
+        } else {
+            $success = $this->handler->setex($cacheKey, $ttl, serialize($value));
+        }
+        return $success ? true : false;
     }
 
     /**
@@ -66,7 +87,9 @@ class RedisCache extends Component
      */
     public function delete($key)
     {
-
+        $cacheKey = $this->keyPrefix . $key;
+        $success  = $this->handler->del($cacheKey);
+        return $success ? true : false;
     }
 
     /**
@@ -75,7 +98,16 @@ class RedisCache extends Component
      */
     public function clear()
     {
-
+        $iterator = null;
+        while (true) {
+            $keys = $this->handler->scan($iterator, "{$this->keyPrefix}*");
+            if ($keys === false) {
+                return true;
+            }
+            foreach ($keys as $key) {
+                $this->handler->del($key);
+            }
+        }
     }
 
     /**
@@ -86,7 +118,11 @@ class RedisCache extends Component
      */
     public function getMultiple($keys, $default = null)
     {
-
+        $results = [];
+        foreach ($keys as $key) {
+            $results[$key] = $this->get($key, $default);
+        }
+        return $results;
     }
 
     /**
@@ -97,7 +133,16 @@ class RedisCache extends Component
      */
     public function setMultiple($values, $ttl = null)
     {
-
+        $results = [];
+        foreach ($values as $key => $value) {
+            $results[] = $this->set($key, $value, $ttl);
+        }
+        foreach ($results as $result) {
+            if (!$result) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -107,7 +152,16 @@ class RedisCache extends Component
      */
     public function deleteMultiple($keys)
     {
-
+        $results = [];
+        foreach ($keys as $key) {
+            $results[] = $this->delete($key);
+        }
+        foreach ($results as $result) {
+            if (!$result) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -117,7 +171,9 @@ class RedisCache extends Component
      */
     public function has($key)
     {
-
+        $cacheKey = $this->keyPrefix . $key;
+        $success  = $this->handler->exists($cacheKey);
+        return $success ? true : false;
     }
 
 }
