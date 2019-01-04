@@ -3,13 +3,14 @@
 namespace Mix\Cache;
 
 use Mix\Core\Component;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Class RedisCache
  * @package Mix\Cache
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class RedisCache extends Component
+class RedisCache extends Component implements CacheInterface
 {
 
     /**

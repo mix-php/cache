@@ -4,13 +4,14 @@ namespace Mix\Cache;
 
 use Mix\Core\Component;
 use Mix\Helpers\FileSystemHelper;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Class FileCache
  * @package Mix\Cache
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class FileCache extends Component
+class FileCache extends Component implements CacheInterface
 {
 
     /**
