@@ -3,28 +3,20 @@
 namespace Mix\Cache;
 
 use Mix\Core\Component;
-use Mix\Helpers\FileSystemHelper;
 use Psr\SimpleCache\CacheInterface;
 
 /**
- * Class FileCache
+ * Class Cache
  * @package Mix\Cache
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class FileCache extends Component implements CacheInterface
+class Cache extends Component implements CacheInterface
 {
 
     /**
-     * 缓存目录
-     * @var string
+     * @var \Mix\Cache\HandlerInterface
      */
-    public $dir = 'cache';
-
-    /**
-     * 分区
-     * @var int
-     */
-    public $partitions = 64;
+    public $handler;
 
     /**
      * 获取缓存
@@ -34,21 +26,7 @@ class FileCache extends Component implements CacheInterface
      */
     public function get($key, $default = null)
     {
-        $filename = $this->getCacheFileName($key);
-        $data     = @file_get_contents($filename);
-        if (empty($data)) {
-            return $default;
-        }
-        $data = unserialize($data);
-        if (!is_array($data) || count($data) !== 2) {
-            return $default;
-        }
-        list($value, $expire) = $data;
-        if ($expire > 0 && $expire < time()) {
-            $this->delete($key);
-            return $default;
-        }
-        return $value;
+        return $this->get($key, $default);
     }
 
     /**
@@ -60,14 +38,7 @@ class FileCache extends Component implements CacheInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        $filename = $this->getCacheFileName($key);
-        $expire   = is_null($ttl) ? 0 : time() + $ttl;
-        $data     = [
-            $value,
-            $expire,
-        ];
-        $bytes    = file_put_contents($filename, serialize($data), FILE_APPEND | LOCK_EX);
-        return $bytes ? true : false;
+        return $this->handler->set($key, $value, $ttl);
     }
 
     /**
@@ -77,8 +48,7 @@ class FileCache extends Component implements CacheInterface
      */
     public function delete($key)
     {
-        $filename = $this->getCacheFileName($key);
-        return @unlink($filename);
+        return $this->handler->delete($key);
     }
 
     /**
@@ -87,8 +57,7 @@ class FileCache extends Component implements CacheInterface
      */
     public function clear()
     {
-        $dir = $this->getCacheDir();
-        return FileSystemHelper::deleteFolder($dir);
+        return $this->handler->clear();
     }
 
     /**
@@ -152,35 +121,7 @@ class FileCache extends Component implements CacheInterface
      */
     public function has($key)
     {
-        $value = $this->get($key);
-        return is_null($value) ? false : true;
-    }
-
-    /**
-     * 获取缓存目录
-     * @return string
-     */
-    protected function getCacheDir()
-    {
-        $cacheDir = $this->dir;
-        if (!FileSystemHelper::isAbsolute($cacheDir)) {
-            $cacheDir = \Mix::$app->getRuntimePath() . DIRECTORY_SEPARATOR . $this->dir;
-        }
-        return $cacheDir;
-    }
-
-    /**
-     * 获取缓存文件
-     * @param $key
-     * @return string
-     */
-    protected function getCacheFileName($key)
-    {
-        $dir      = $this->getCacheDir();
-        $subDir   = crc32($key) / $this->partitions;
-        $name     = md5($key);
-        $filename = $dir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $name;
-        return $filename;
+        return $this->handler->has($key);
     }
 
 }

@@ -3,14 +3,13 @@
 namespace Mix\Cache;
 
 use Mix\Core\Component;
-use Psr\SimpleCache\CacheInterface;
 
 /**
- * Class RedisCache
+ * Class RedisHandler
  * @package Mix\Cache
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class RedisCache extends Component implements CacheInterface
+class RedisHandler extends Component implements HandlerInterface
 {
 
     /**
@@ -109,60 +108,6 @@ class RedisCache extends Component implements CacheInterface
                 $this->handler->del($key);
             }
         }
-    }
-
-    /**
-     * 批量获取
-     * @param $keys
-     * @param null $default
-     * @return array
-     */
-    public function getMultiple($keys, $default = null)
-    {
-        $results = [];
-        foreach ($keys as $key) {
-            $results[$key] = $this->get($key, $default);
-        }
-        return $results;
-    }
-
-    /**
-     * 批量设置
-     * @param $values
-     * @param null $ttl
-     * @return bool
-     */
-    public function setMultiple($values, $ttl = null)
-    {
-        $results = [];
-        foreach ($values as $key => $value) {
-            $results[] = $this->set($key, $value, $ttl);
-        }
-        foreach ($results as $result) {
-            if (!$result) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * 批量删除
-     * @param $keys
-     * @return bool
-     */
-    public function deleteMultiple($keys)
-    {
-        $results = [];
-        foreach ($keys as $key) {
-            $results[] = $this->delete($key);
-        }
-        foreach ($results as $result) {
-            if (!$result) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
