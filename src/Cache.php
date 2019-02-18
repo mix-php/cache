@@ -2,7 +2,7 @@
 
 namespace Mix\Cache;
 
-use Mix\Core\Component;
+use Mix\Core\Component\Component;
 use Psr\SimpleCache\CacheInterface;
 
 /**
