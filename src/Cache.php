@@ -2,7 +2,7 @@
 
 namespace Mix\Cache;
 
-use Mix\Core\Component\Component;
+use Mix\Core\Component\AbstractComponent;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -10,7 +10,7 @@ use Psr\SimpleCache\CacheInterface;
  * @package Mix\Cache
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class Cache extends Component implements CacheInterface
+class Cache extends AbstractComponent implements CacheInterface
 {
 
     /**

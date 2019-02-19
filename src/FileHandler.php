@@ -2,7 +2,7 @@
 
 namespace Mix\Cache;
 
-use Mix\Core\Component\Component;
+use Mix\Core\Component\AbstractComponent;
 use Mix\Helpers\FileSystemHelper;
 
 
@@ -11,7 +11,7 @@ use Mix\Helpers\FileSystemHelper;
  * @package Mix\Cache
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class FileHandler extends Component implements HandlerInterface
+class FileHandler extends AbstractComponent implements HandlerInterface
 {
 
     /**

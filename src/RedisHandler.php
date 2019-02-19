@@ -2,14 +2,14 @@
 
 namespace Mix\Cache;
 
-use Mix\Core\Component\Component;
+use Mix\Core\Component\AbstractComponent;
 
 /**
  * Class RedisHandler
  * @package Mix\Cache
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class RedisHandler extends Component implements HandlerInterface
+class RedisHandler extends AbstractComponent implements HandlerInterface
 {
 
     /**
