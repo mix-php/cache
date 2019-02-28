@@ -14,6 +14,7 @@ class Cache extends AbstractComponent implements CacheInterface
 {
 
     /**
+     * 处理器
      * @var \Mix\Cache\HandlerInterface
      */
     public $handler;
