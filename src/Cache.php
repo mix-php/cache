@@ -27,7 +27,7 @@ class Cache extends AbstractComponent implements CacheInterface
      */
     public function get($key, $default = null)
     {
-        return $this->get($key, $default);
+        return $this->handler->get($key, $default);
     }
 
     /**

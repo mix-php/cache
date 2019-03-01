@@ -5,7 +5,6 @@ namespace Mix\Cache;
 use Mix\Core\Component\AbstractComponent;
 use Mix\Helpers\FileSystemHelper;
 
-
 /**
  * Class FileHandler
  * @package Mix\Cache
