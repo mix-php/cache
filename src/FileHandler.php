@@ -3,7 +3,7 @@
 namespace Mix\Cache;
 
 use Mix\Core\Component\AbstractComponent;
-use Mix\Helpers\FileSystemHelper;
+use Mix\Helper\FileSystemHelper;
 
 /**
  * Class FileHandler
