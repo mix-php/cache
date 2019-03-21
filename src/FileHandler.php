@@ -33,8 +33,8 @@ class FileHandler extends AbstractComponent implements HandlerInterface
      */
     public function get($key, $default = null)
     {
-        $filename = $this->getCacheFileName($key);
-        $data     = @file_get_contents($filename);
+        $file = $this->getCacheFile($key);
+        $data = @file_get_contents($file);
         if (empty($data)) {
             return $default;
         }
@@ -59,13 +59,17 @@ class FileHandler extends AbstractComponent implements HandlerInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        $filename = $this->getCacheFileName($key);
-        $expire   = is_null($ttl) ? 0 : time() + $ttl;
-        $data     = [
+        $file   = $this->getCacheFile($key);
+        $expire = is_null($ttl) ? 0 : time() + $ttl;
+        $data   = [
             $value,
             $expire,
         ];
-        $bytes    = file_put_contents($filename, serialize($data), FILE_APPEND | LOCK_EX);
+        // 创建目录
+        $dir = dirname($file);
+        is_dir($dir) or mkdir($dir, 0777, true);
+        // 写入
+        $bytes = file_put_contents($file, serialize($data), FILE_APPEND | LOCK_EX);
         return $bytes ? true : false;
     }
 
@@ -76,8 +80,8 @@ class FileHandler extends AbstractComponent implements HandlerInterface
      */
     public function delete($key)
     {
-        $filename = $this->getCacheFileName($key);
-        return @unlink($filename);
+        $file = $this->getCacheFile($key);
+        return @unlink($file);
     }
 
     /**
@@ -119,13 +123,12 @@ class FileHandler extends AbstractComponent implements HandlerInterface
      * @param $key
      * @return string
      */
-    protected function getCacheFileName($key)
+    protected function getCacheFile($key)
     {
-        $dir      = $this->getCacheDir();
-        $subDir   = crc32($key) / $this->partitions;
-        $name     = md5($key);
-        $filename = $dir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $name;
-        return $filename;
+        $dir    = $this->getCacheDir();
+        $subDir = crc32($key) % $this->partitions;
+        $name   = md5($key);
+        return $dir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $name;
     }
 
 }
