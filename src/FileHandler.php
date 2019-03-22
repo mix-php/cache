@@ -10,7 +10,7 @@ use Mix\Helper\FileSystemHelper;
  * @package Mix\Cache
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class FileHandler extends AbstractComponent implements HandlerInterface
+class FileHandler extends AbstractComponent implements CacheHandlerInterface
 {
 
     /**

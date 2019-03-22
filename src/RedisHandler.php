@@ -9,7 +9,7 @@ use Mix\Core\Component\AbstractComponent;
  * @package Mix\Cache
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class RedisHandler extends AbstractComponent implements HandlerInterface
+class RedisHandler extends AbstractComponent implements CacheHandlerInterface
 {
 
     /**

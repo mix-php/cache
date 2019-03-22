@@ -3,11 +3,11 @@
 namespace Mix\Cache;
 
 /**
- * Interface HandlerInterface
+ * Interface CacheHandlerInterface
  * @package Mix\Cache
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-interface HandlerInterface
+interface CacheHandlerInterface
 {
 
     /**
