@@ -8,7 +8,7 @@ use Psr\SimpleCache\CacheInterface;
 /**
  * Class Cache
  * @package Mix\Cache
- * @author LIUJIAN <coder.keda@gmail.com>
+ * @author liu,jian <coder.keda@gmail.com>
  */
 class Cache extends AbstractComponent implements CacheInterface
 {

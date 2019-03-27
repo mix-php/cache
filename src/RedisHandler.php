@@ -7,7 +7,7 @@ use Mix\Core\Component\AbstractComponent;
 /**
  * Class RedisHandler
  * @package Mix\Cache
- * @author LIUJIAN <coder.keda@gmail.com>
+ * @author liu,jian <coder.keda@gmail.com>
  */
 class RedisHandler extends AbstractComponent implements CacheHandlerInterface
 {
