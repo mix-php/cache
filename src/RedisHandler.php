@@ -19,7 +19,7 @@ class RedisHandler extends AbstractComponent implements CacheHandlerInterface
     public $pool;
 
     /**
-     * 处理者
+     * 连接
      * @var \Mix\Redis\RedisConnectionInterface
      */
     public $connection;
