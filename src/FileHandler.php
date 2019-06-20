@@ -2,7 +2,7 @@
 
 namespace Mix\Cache;
 
-use Mix\Core\Component\AbstractComponent;
+use Mix\Component\AbstractComponent;
 use Mix\Helper\FileSystemHelper;
 
 /**
