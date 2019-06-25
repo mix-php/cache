@@ -2,7 +2,7 @@
 
 namespace Mix\Cache;
 
-use Mix\Component\AbstractComponent;
+use Mix\Bean\BeanInjector;
 use Mix\Helper\FileSystemHelper;
 
 /**
@@ -10,7 +10,7 @@ use Mix\Helper\FileSystemHelper;
  * @package Mix\Cache
  * @author liu,jian <coder.keda@gmail.com>
  */
-class FileHandler extends AbstractComponent implements CacheHandlerInterface
+class FileHandler implements CacheHandlerInterface
 {
 
     /**
@@ -24,6 +24,15 @@ class FileHandler extends AbstractComponent implements CacheHandlerInterface
      * @var int
      */
     public $partitions = 64;
+
+    /**
+     * Authorization constructor.
+     * @param array $config
+     */
+    public function __construct(array $config)
+    {
+        BeanInjector::inject($this, $config);
+    }
 
     /**
      * 获取缓存

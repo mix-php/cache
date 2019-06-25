@@ -2,7 +2,7 @@
 
 namespace Mix\Cache;
 
-use Mix\Component\AbstractComponent;
+use Mix\Bean\BeanInjector;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -10,7 +10,7 @@ use Psr\SimpleCache\CacheInterface;
  * @package Mix\Cache
  * @author liu,jian <coder.keda@gmail.com>
  */
-class Cache extends AbstractComponent implements CacheInterface
+class Cache implements CacheInterface
 {
 
     /**
@@ -18,6 +18,15 @@ class Cache extends AbstractComponent implements CacheInterface
      * @var \Mix\Cache\CacheHandlerInterface
      */
     public $handler;
+
+    /**
+     * Authorization constructor.
+     * @param array $config
+     */
+    public function __construct(array $config)
+    {
+        BeanInjector::inject($this, $config);
+    }
 
     /**
      * 获取缓存
