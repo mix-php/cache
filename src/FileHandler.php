@@ -114,6 +114,19 @@ class FileHandler implements CacheHandlerInterface
     }
 
     /**
+     * 获取缓存文件
+     * @param $key
+     * @return string
+     */
+    protected function getCacheFile($key)
+    {
+        $dir    = $this->getCacheDir();
+        $subDir = crc32($key) % $this->partitions;
+        $name   = md5($key);
+        return $dir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $name;
+    }
+
+    /**
      * 获取缓存目录
      * @return string
      */
@@ -125,19 +138,6 @@ class FileHandler implements CacheHandlerInterface
             $cacheDir = \Mix::$app->getRuntimePath() . DIRECTORY_SEPARATOR . $this->dir;
         }
         return $cacheDir;
-    }
-
-    /**
-     * 获取缓存文件
-     * @param $key
-     * @return string
-     */
-    protected function getCacheFile($key)
-    {
-        $dir    = $this->getCacheDir();
-        $subDir = crc32($key) % $this->partitions;
-        $name   = md5($key);
-        return $dir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $name;
     }
 
     /**
