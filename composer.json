@@ -1,6 +1,6 @@
 {
   "name": "mix/cache",
-  "description": "Mix PHP Cache http://www.mixphp.cn",
+  "description": "Mix Cache http://www.mixphp.cn",
   "type": "framework",
   "keywords": [
     "framework",
@@ -18,7 +18,9 @@
   "require": {
     "php": ">=7.0.0",
     "psr/simple-cache": "~1.0",
-    "mix/framework": "v2.1.x-dev"
+    "mix/bean": "v2.1.x-dev",
+    "mix/pool": "v2.1.x-dev",
+    "mix/redis": "v2.1.x-dev"
   },
   "autoload": {
     "psr-4": {

@@ -3,6 +3,8 @@
 namespace Mix\Cache;
 
 use Mix\Bean\BeanInjector;
+use Mix\Pool\ConnectionPoolInterface;
+use Mix\Redis\RedisConnectionInterface;
 
 /**
  * Class RedisHandler
@@ -14,13 +16,13 @@ class RedisHandler implements CacheHandlerInterface
 
     /**
      * 连接池
-     * @var \Mix\Pool\ConnectionPoolInterface
+     * @var ConnectionPoolInterface
      */
     public $pool;
 
     /**
      * 连接
-     * @var \Mix\Redis\RedisConnectionInterface
+     * @var RedisConnectionInterface
      */
     public $connection;
 

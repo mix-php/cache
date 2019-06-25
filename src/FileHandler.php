@@ -3,7 +3,6 @@
 namespace Mix\Cache;
 
 use Mix\Bean\BeanInjector;
-use Mix\Helper\FileSystemHelper;
 
 /**
  * Class FileHandler
@@ -100,7 +99,7 @@ class FileHandler implements CacheHandlerInterface
     public function clear()
     {
         $dir = $this->getCacheDir();
-        return FileSystemHelper::deleteFolder($dir);
+        return static::deleteFolder($dir);
     }
 
     /**
@@ -121,7 +120,8 @@ class FileHandler implements CacheHandlerInterface
     protected function getCacheDir()
     {
         $cacheDir = $this->dir;
-        if (!FileSystemHelper::isAbsolute($cacheDir)) {
+        $isMix    = class_exists(\Mix::class);
+        if ($isMix && !static::isAbsolute($cacheDir)) {
             $cacheDir = \Mix::$app->getRuntimePath() . DIRECTORY_SEPARATOR . $this->dir;
         }
         return $cacheDir;
@@ -138,6 +138,51 @@ class FileHandler implements CacheHandlerInterface
         $subDir = crc32($key) % $this->partitions;
         $name   = md5($key);
         return $dir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $name;
+    }
+
+    /**
+     * 判断是否为绝对路径
+     * @param $path
+     * @return bool
+     */
+    protected static function isAbsolute($path)
+    {
+        if (($position = strpos($path, './')) !== false && $position <= 2) {
+            return false;
+        }
+        if (strpos($path, ':') !== false) {
+            return true;
+        }
+        if (substr($path, 0, 1) === '/') {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 删除指定的文件夹及其内容
+     * @param $dir
+     * @return bool
+     */
+    protected static function deleteFolder($dir)
+    {
+        $dh = @opendir($dir);
+        if (!$dh) {
+            return false;
+        }
+        while (false !== ($file = readdir($dh))) {
+            if (($file != '.') && ($file != '..')) {
+                $full = $dir . '/' . $file;
+                if (is_dir($full)) {
+                    self::deleteFolder($full);
+                } else {
+                    unlink($full);
+                }
+            }
+        }
+        closedir($dh);
+        rmdir($dir);
+        return true;
     }
 
 }
