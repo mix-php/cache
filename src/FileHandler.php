@@ -16,7 +16,7 @@ class FileHandler implements CacheHandlerInterface
      * 缓存目录
      * @var string
      */
-    public $dir = 'cache';
+    public $dir = '';
 
     /**
      * 分区
@@ -98,7 +98,7 @@ class FileHandler implements CacheHandlerInterface
      */
     public function clear()
     {
-        $dir = $this->getCacheDir();
+        $dir = $this->dir;
         return static::deleteFolder($dir);
     }
 
@@ -120,43 +120,10 @@ class FileHandler implements CacheHandlerInterface
      */
     protected function getCacheFile($key)
     {
-        $dir    = $this->getCacheDir();
+        $dir    = $this->dir;
         $subDir = crc32($key) % $this->partitions;
-        $name   = md5($key);
-        return $dir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $name;
-    }
-
-    /**
-     * 获取缓存目录
-     * @return string
-     */
-    protected function getCacheDir()
-    {
-        $dir   = $this->dir;
-        $isMix = class_exists(\Mix::class);
-        if ($isMix && !static::isAbsolute($dir)) {
-            $dir = \Mix::$app->getRuntimePath() . DIRECTORY_SEPARATOR . $dir;
-        }
-        return $dir;
-    }
-
-    /**
-     * 判断是否为绝对路径
-     * @param $path
-     * @return bool
-     */
-    protected static function isAbsolute($path)
-    {
-        if (($position = strpos($path, './')) !== false && $position <= 2) {
-            return false;
-        }
-        if (strpos($path, ':') !== false) {
-            return true;
-        }
-        if (substr($path, 0, 1) === '/') {
-            return true;
-        }
-        return false;
+        $file   = md5($key);
+        return $dir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $file;
     }
 
     /**
