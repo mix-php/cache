@@ -15,7 +15,7 @@ class Cache implements CacheInterface
 
     /**
      * 处理器
-     * @var \Mix\Cache\CacheHandlerInterface
+     * @var CacheHandlerInterface
      */
     public $handler;
 
@@ -23,7 +23,7 @@ class Cache implements CacheInterface
      * Authorization constructor.
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config = [])
     {
         BeanInjector::inject($this, $config);
     }
@@ -68,6 +68,16 @@ class Cache implements CacheInterface
     public function clear()
     {
         return $this->handler->clear();
+    }
+
+    /**
+     * 判断缓存是否存在
+     * @param $key
+     * @return bool
+     */
+    public function has($key)
+    {
+        return $this->handler->has($key);
     }
 
     /**
@@ -122,16 +132,6 @@ class Cache implements CacheInterface
             }
         }
         return true;
-    }
-
-    /**
-     * 判断缓存是否存在
-     * @param $key
-     * @return bool
-     */
-    public function has($key)
-    {
-        return $this->handler->has($key);
     }
 
 }
