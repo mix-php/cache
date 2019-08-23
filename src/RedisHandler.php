@@ -48,32 +48,25 @@ class RedisHandler implements CacheHandlerInterface
     }
 
     /**
-     * 初始化
+     * 获取连接
+     * @return RedisConnectionInterface
      */
-    public function init()
+    protected function getConnection()
     {
-        // 从连接池获取连接
-        if (isset($this->pool)) {
-            $this->connection = $this->pool->getConnection();
-        }
+        return $this->pool ? $this->pool->getConnection() : $conn;
     }
 
     /**
-     * 析构
+     * 释放连接
+     * @param $connection
+     * @return bool
      */
-    public function __destruct()
+    protected static function release($connection)
     {
-        // TODO: Implement __destruct() method.
-        // 释放连接
-        if (
-            isset($this->pool) &&
-            isset($this->connection) &&
-            !$this->throwException &&
-            method_exists($this->connection, 'release')
-        ) {
-            $this->connection->release();
-            $this->connection = null;
+        if (!method_exists($conn, 'release')) {
+            return false;
         }
+        return call_user_func([$conn, 'release']);
     }
 
     /**
@@ -84,23 +77,18 @@ class RedisHandler implements CacheHandlerInterface
      */
     public function get($key, $default = null)
     {
-        try {
-
-            $cacheKey = $this->keyPrefix . $key;
-            $value    = $this->connection->get($cacheKey);
-            if (empty($value)) {
-                return $default;
-            }
-            $value = unserialize($value);
-            if ($value === false) {
-                return $default;
-            }
-            return $value;
-
-        } catch (\Throwable $e) {
-            $this->throwException = true;
-            throw  $e;
+        $cacheKey = $this->keyPrefix . $key;
+        $conn     = $this->getConnection();
+        $value    = $conn->get($cacheKey);
+        static::release($conn);
+        if (empty($value)) {
+            return $default;
         }
+        $value = unserialize($value);
+        if ($value === false) {
+            return $default;
+        }
+        return $value;
     }
 
     /**
@@ -112,20 +100,15 @@ class RedisHandler implements CacheHandlerInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        try {
-
-            $cacheKey = $this->keyPrefix . $key;
-            if (is_null($ttl)) {
-                $success = $this->connection->set($cacheKey, serialize($value));
-            } else {
-                $success = $this->connection->setex($cacheKey, $ttl, serialize($value));
-            }
-            return $success ? true : false;
-
-        } catch (\Throwable $e) {
-            $this->throwException = true;
-            throw  $e;
+        $cacheKey = $this->keyPrefix . $key;
+        $conn     = $this->getConnection();
+        if (is_null($ttl)) {
+            $success = $conn->set($cacheKey, serialize($value));
+        } else {
+            $success = $conn->setex($cacheKey, $ttl, serialize($value));
         }
+        static::release($conn);
+        return $success ? true : false;
     }
 
     /**
@@ -135,16 +118,11 @@ class RedisHandler implements CacheHandlerInterface
      */
     public function delete($key)
     {
-        try {
-
-            $cacheKey = $this->keyPrefix . $key;
-            $success  = $this->connection->del($cacheKey);
-            return $success ? true : false;
-
-        } catch (\Throwable $e) {
-            $this->throwException = true;
-            throw  $e;
-        }
+        $cacheKey = $this->keyPrefix . $key;
+        $conn     = $this->getConnection();
+        $success  = $conn->del($cacheKey);
+        static::release($conn);
+        return $success ? true : false;
     }
 
     /**
@@ -153,24 +131,19 @@ class RedisHandler implements CacheHandlerInterface
      */
     public function clear()
     {
-        try {
-
-            $iterator = null;
-            while (true) {
-                $keys = $this->connection->scan($iterator, "{$this->keyPrefix}*");
-                if ($keys === false) {
-                    return true;
-                }
-                foreach ($keys as $key) {
-                    $this->connection->del($key);
-                }
+        $iterator = null;
+        $conn     = $this->getConnection();
+        while (true) {
+            $keys = $conn->scan($iterator, "{$this->keyPrefix}*");
+            if ($keys === false) {
+                return true;
             }
-            return true;
-
-        } catch (\Throwable $e) {
-            $this->throwException = true;
-            throw  $e;
+            foreach ($keys as $key) {
+                $conn->del($key);
+            }
         }
+        static::release($conn);
+        return true;
     }
 
     /**
@@ -180,16 +153,11 @@ class RedisHandler implements CacheHandlerInterface
      */
     public function has($key)
     {
-        try {
-
-            $cacheKey = $this->keyPrefix . $key;
-            $success  = $this->connection->exists($cacheKey);
-            return $success ? true : false;
-
-        } catch (\Throwable $e) {
-            $this->throwException = true;
-            throw  $e;
-        }
+        $cacheKey = $this->keyPrefix . $key;
+        $conn     = $this->getConnection();
+        $success  = $conn->exists($cacheKey);
+        static::release($conn);
+        return $success ? true : false;
     }
 
 }
