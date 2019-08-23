@@ -33,12 +33,6 @@ class RedisHandler implements CacheHandlerInterface
     public $keyPrefix = 'CACHE:';
 
     /**
-     * 是否抛出异常
-     * @var bool
-     */
-    protected $throwException = false;
-
-    /**
      * Authorization constructor.
      * @param array $config
      */
@@ -61,7 +55,7 @@ class RedisHandler implements CacheHandlerInterface
      * @param $connection
      * @return bool
      */
-    protected static function release($connection)
+    protected function release($connection)
     {
         if (!method_exists($conn, 'release')) {
             return false;
@@ -80,7 +74,7 @@ class RedisHandler implements CacheHandlerInterface
         $cacheKey = $this->keyPrefix . $key;
         $conn     = $this->getConnection();
         $value    = $conn->get($cacheKey);
-        static::release($conn);
+        $this->release($conn);
         if (empty($value)) {
             return $default;
         }
@@ -107,7 +101,7 @@ class RedisHandler implements CacheHandlerInterface
         } else {
             $success = $conn->setex($cacheKey, $ttl, serialize($value));
         }
-        static::release($conn);
+        $this->release($conn);
         return $success ? true : false;
     }
 
@@ -121,7 +115,7 @@ class RedisHandler implements CacheHandlerInterface
         $cacheKey = $this->keyPrefix . $key;
         $conn     = $this->getConnection();
         $success  = $conn->del($cacheKey);
-        static::release($conn);
+        $this->release($conn);
         return $success ? true : false;
     }
 
@@ -142,7 +136,7 @@ class RedisHandler implements CacheHandlerInterface
                 $conn->del($key);
             }
         }
-        static::release($conn);
+        $this->release($conn);
         return true;
     }
 
@@ -156,7 +150,7 @@ class RedisHandler implements CacheHandlerInterface
         $cacheKey = $this->keyPrefix . $key;
         $conn     = $this->getConnection();
         $success  = $conn->exists($cacheKey);
-        static::release($conn);
+        $this->release($conn);
         return $success ? true : false;
     }
 
