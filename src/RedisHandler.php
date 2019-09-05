@@ -4,7 +4,7 @@ namespace Mix\Cache;
 
 use Mix\Bean\BeanInjector;
 use Mix\Pool\ConnectionPoolInterface;
-use Mix\Redis\RedisConnectionInterface;
+use Mix\Redis\ConnectionInterface;
 
 /**
  * Class RedisHandler
@@ -22,7 +22,7 @@ class RedisHandler implements CacheHandlerInterface
 
     /**
      * 连接
-     * @var RedisConnectionInterface
+     * @var ConnectionInterface
      */
     public $connection;
 
@@ -43,7 +43,7 @@ class RedisHandler implements CacheHandlerInterface
 
     /**
      * 获取连接
-     * @return RedisConnectionInterface
+     * @return ConnectionInterface
      */
     protected function getConnection()
     {
