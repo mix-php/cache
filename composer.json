@@ -18,9 +18,9 @@
   "require": {
     "php": ">=7.0.0",
     "psr/simple-cache": "~1.0",
-    "mix/bean": "v2.1.0-beta",
-    "mix/pool": "v2.1.0-beta",
-    "mix/redis": "v2.1.0-beta"
+    "mix/bean": "v2.1.0-alpha",
+    "mix/pool": "v2.1.0-alpha",
+    "mix/redis": "v2.1.0-alpha"
   },
   "autoload": {
     "psr-4": {
