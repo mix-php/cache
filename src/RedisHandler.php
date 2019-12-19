@@ -57,10 +57,10 @@ class RedisHandler implements CacheHandlerInterface
      */
     protected function release($connection)
     {
-        if (!method_exists($conn, 'release')) {
+        if (!method_exists($connection, 'release')) {
             return false;
         }
-        return call_user_func([$conn, 'release']);
+        return call_user_func([$connection, 'release']);
     }
 
     /**
