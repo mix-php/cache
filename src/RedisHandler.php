@@ -47,7 +47,7 @@ class RedisHandler implements CacheHandlerInterface
      */
     protected function getConnection()
     {
-        return $this->pool ? $this->pool->getConnection() : $conn;
+        return $this->pool ? $this->pool->getConnection() : $this->connection;
     }
 
     /**
@@ -57,10 +57,10 @@ class RedisHandler implements CacheHandlerInterface
      */
     protected function release($connection)
     {
-        if (!method_exists($conn, 'release')) {
+        if (!method_exists($connection, 'release')) {
             return false;
         }
-        return call_user_func([$conn, 'release']);
+        return call_user_func([$connection, 'release']);
     }
 
     /**
@@ -71,10 +71,10 @@ class RedisHandler implements CacheHandlerInterface
      */
     public function get($key, $default = null)
     {
-        $cacheKey = $this->keyPrefix . $key;
-        $conn     = $this->getConnection();
-        $value    = $conn->get($cacheKey);
-        $this->release($conn);
+        $cacheKey   = $this->keyPrefix . $key;
+        $connection = $this->getConnection();
+        $value      = $connection->get($cacheKey);
+        $this->release($connection);
         if (empty($value)) {
             return $default;
         }
@@ -94,14 +94,14 @@ class RedisHandler implements CacheHandlerInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        $cacheKey = $this->keyPrefix . $key;
-        $conn     = $this->getConnection();
+        $cacheKey   = $this->keyPrefix . $key;
+        $connection = $this->getConnection();
         if (is_null($ttl)) {
-            $success = $conn->set($cacheKey, serialize($value));
+            $success = $connection->set($cacheKey, serialize($value));
         } else {
-            $success = $conn->setex($cacheKey, $ttl, serialize($value));
+            $success = $connection->setex($cacheKey, $ttl, serialize($value));
         }
-        $this->release($conn);
+        $this->release($connection);
         return $success ? true : false;
     }
 
@@ -112,10 +112,10 @@ class RedisHandler implements CacheHandlerInterface
      */
     public function delete($key)
     {
-        $cacheKey = $this->keyPrefix . $key;
-        $conn     = $this->getConnection();
-        $success  = $conn->del($cacheKey);
-        $this->release($conn);
+        $cacheKey   = $this->keyPrefix . $key;
+        $connection = $this->getConnection();
+        $success    = $connection->del($cacheKey);
+        $this->release($connection);
         return $success ? true : false;
     }
 
@@ -125,18 +125,18 @@ class RedisHandler implements CacheHandlerInterface
      */
     public function clear()
     {
-        $iterator = null;
-        $conn     = $this->getConnection();
+        $iterator   = null;
+        $connection = $this->getConnection();
         while (true) {
-            $keys = $conn->scan($iterator, "{$this->keyPrefix}*");
+            $keys = $connection->scan($iterator, "{$this->keyPrefix}*");
             if ($keys === false) {
                 return true;
             }
             foreach ($keys as $key) {
-                $conn->del($key);
+                $connection->del($key);
             }
         }
-        $this->release($conn);
+        $this->release($connection);
         return true;
     }
 
@@ -147,10 +147,10 @@ class RedisHandler implements CacheHandlerInterface
      */
     public function has($key)
     {
-        $cacheKey = $this->keyPrefix . $key;
-        $conn     = $this->getConnection();
-        $success  = $conn->exists($cacheKey);
-        $this->release($conn);
+        $cacheKey   = $this->keyPrefix . $key;
+        $connection = $this->getConnection();
+        $success    = $connection->exists($cacheKey);
+        $this->release($connection);
         return $success ? true : false;
     }
 
